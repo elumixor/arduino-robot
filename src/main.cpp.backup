@@ -1,0 +1,134 @@
+#include "Arduino.h"
+#include "HardwareSerial.h"
+#include <SoftwareSerial.h>
+
+SoftwareSerial esp(2, 3);
+#define DEBUG 1
+
+#ifdef DEBUG
+#define log(x) Serial.println(x)
+#else
+#define log(x)
+#endif
+
+String call_esp(const char *command, const int timeout = 1000);
+String read_msg();
+
+void setup() {
+  Serial.begin(9600);
+  esp.begin(9600);
+
+  // put your setup code here, to run once:
+  while (!Serial) {
+  }
+  while (!esp) {
+  }
+
+  Serial.println("Serial ports initialized");
+
+  // Check if AT is OK
+  /* call_esp("AT"); */
+  /*  */
+  /* // Set to STAtion mode (we want to connect) */
+  /* call_esp("AT+CWMODE=1"); */
+  /*  */
+  /* // Connect to WiFi */
+  /* call_esp("AT+CWJAP=\"Top Kek's amazing WIFI\",\"Solo322Dota1Love\""); */
+  /*  */
+  /* // Set wifi address */
+  /* call_esp("AT+CIPSTA=\"192.168.0.111\""); */
+  /*  */
+  /* // Enable multiple connections */
+  /* call_esp("AT+CIPMUX=1"); */
+  /*  */
+  /* // Accept at port 80 */
+  /* call_esp("AT+CIPSERVER=1,80"); */
+}
+
+void loop() {
+  while (true) {
+    auto msg = read_msg();
+    auto response = call_esp(msg.c_str());
+    Serial.println(response);
+  }
+}
+
+String read_msg() {
+  char msg[100];
+  int i = 0;
+
+  while (true) {
+    while (Serial.available()) {
+      char c = Serial.read();
+      if (c == '\r')
+        continue;
+      if (c == '\n') {
+        log("Message received");
+
+        msg[i] = '\0';
+        return {msg};
+      }
+
+      msg[i++] = c;
+    }
+  }
+}
+
+#define RESPONSE_OK 0
+#define RESPONSE_ERROR 1
+#define RESPONSE_WAITING 2
+
+int get_response_status(const char *response, int len) {
+  if (response[len] != '\n')
+    return RESPONSE_WAITING;
+
+  if (response[len - 2] == 'O' && response[len - 1] == 'K')
+    return RESPONSE_OK;
+
+  if (response[len - 5] == 'E' && response[len - 4] == 'R' &&
+      response[len - 3] == 'R' && response[len - 2] == 'O' &&
+      response[len - 1] == 'R')
+    return RESPONSE_ERROR;
+
+  return RESPONSE_WAITING;
+}
+
+String call_esp(const char *command, const int timeout) {
+  auto command_len = strlen(command);
+  char command_[command_len + 3];
+
+  strcpy(command_, command);
+  command_[command_len] = '\r';
+  command_[command_len] = '\n';
+  command_[command_len] = '\0';
+
+  esp.println(command_);
+
+  char response[100];
+  int i = 0;
+  int response_status = RESPONSE_WAITING;
+
+  while (response_status == RESPONSE_WAITING) {
+    if (esp.available()) {
+      while (esp.available()) {
+        char b = esp.read();
+
+        if (b == '\r')
+          continue;
+
+        response[i++] = b;
+      }
+
+      response_status = get_response_status(response, i - 1);
+    }
+  }
+
+  while (response[i - 1] == '\r' || response[i - 1] == '\n')
+    i--;
+
+  response[i] = '\0';
+
+  log(response);
+
+  return {response};
+}
