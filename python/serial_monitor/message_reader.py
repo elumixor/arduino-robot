@@ -8,7 +8,7 @@ class MessageReader:
         self.__ignore_ch = None
 
     def check_message(self):
-        print(f"\33[2K\r[in]: {self.__message}", end="")
+        # print(f"\33[2K\r[in]: {self.__message}", end="")
 
         if self.__kb.kbhit():
             ch = self.__kb.getch()

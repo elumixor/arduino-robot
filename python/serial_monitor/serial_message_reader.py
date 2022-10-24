@@ -16,7 +16,7 @@ class SerialMessageReader:
                 self.__current_expected_length = None
                 self.__current_expected_length_bytes = b''
 
-                message = self.__current_message.decode('utf-8')
+                message = self.__current_message.decode('utf-8', 'ignore')
                 self.__current_message = None
 
                 return message
