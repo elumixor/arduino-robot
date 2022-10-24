@@ -133,5 +133,10 @@
         "command": "/home/elumixor/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/src/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60104 -DARDUINO_AVR_UNO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I/home/elumixor/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -I/home/elumixor/.platformio/packages/toolchain-atmelavr/avr/include -I/home/elumixor/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/elumixor/.platformio/packages/framework-arduino-avr/variants/standard src/main.cpp",
         "directory": "/home/elumixor/arduino/wifi",
         "file": "/home/elumixor/arduino/wifi/src/main.cpp"
+    },
+    {
+        "command": "/home/elumixor/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/src/my_serial.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60104 -DARDUINO_AVR_UNO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I/home/elumixor/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -I/home/elumixor/.platformio/packages/toolchain-atmelavr/avr/include -I/home/elumixor/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/elumixor/.platformio/packages/framework-arduino-avr/variants/standard src/my_serial.cpp",
+        "directory": "/home/elumixor/arduino/wifi",
+        "file": "/home/elumixor/arduino/wifi/src/my_serial.cpp"
     }
 ]
