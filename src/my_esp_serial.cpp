@@ -9,11 +9,7 @@ MyEspSerial::MyEspSerial(int esp_rx, int esp_tx, int esp_baud_rate)
 }
 
 String MyEspSerial::send(const String &msg) {
-  esp_serial.write(msg.c_str(), msg.length());
-  esp_serial.write("\r\n");
-
-  static char buffer[128];
-  uint8_t i = 0;
+  send_forget(msg);
 
   // Receive data until either OK or ERROR is received
   while (true) {
@@ -21,16 +17,42 @@ String MyEspSerial::send(const String &msg) {
       delay(1);
 
     char c = esp_serial.read();
-    buffer[i++] = c;
+    current_message[i++] = c;
 
-    if (i >= 2 && buffer[i - 2] == 'O' && buffer[i - 1] == 'K')
+    if (i >= 2 && current_message[i - 2] == 'O' && current_message[i - 1] == 'K')
       break;
-    if (i >= 5 && buffer[i - 5] == 'E' && buffer[i - 4] == 'R' &&
-        buffer[i - 3] == 'R' && buffer[i - 2] == 'O' && buffer[i - 1] == 'R')
+    if (i >= 5 && current_message[i - 5] == 'E' && current_message[i - 4] == 'R' &&
+        current_message[i - 3] == 'R' && current_message[i - 2] == 'O' && current_message[i - 1] == 'R')
       break;
   }
 
-  buffer[i] = '\0';
+  current_message[i] = '\0';
 
-  return {buffer};
+  return {current_message};
+}
+
+void MyEspSerial::send_forget(const String &msg) {
+  esp_serial.write(msg.c_str(), msg.length());
+  esp_serial.write("\r\n");
+}
+
+String MyEspSerial::check_message() {
+  // Receive data until either OK or ERROR is received
+  while (esp_serial.available() > 0) {
+
+    char c = esp_serial.read();
+    current_message[i++] = c;
+
+    if ((i >= 2 && current_message[i - 2] == 'O' &&
+         current_message[i - 1] == 'K') ||
+        (i >= 5 && current_message[i - 5] == 'E' &&
+         current_message[i - 4] == 'R' && current_message[i - 3] == 'R' &&
+         current_message[i - 2] == 'O' && current_message[i - 1] == 'R')) {
+      current_message[i] = '\0';
+      i = 0;
+      return {current_message};
+    }
+  }
+
+  return {""};
 }
